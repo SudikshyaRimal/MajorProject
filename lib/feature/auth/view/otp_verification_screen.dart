@@ -1,31 +1,28 @@
-
-// Forgot Password Screen
 import 'package:flutter/material.dart';
-import 'package:sewa_mitra/feature/auth/view/otp_verification_screen.dart';
 
 import '../../../core/cust_text_form_field.dart';
 import '../../../core/form_validators.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({super.key});
+class OTPVerificationScreen extends StatefulWidget {
+  const OTPVerificationScreen({super.key});
 
   @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  State<OTPVerificationScreen> createState() => _OTPVerificationScreenState();
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _otpController = TextEditingController();
   bool _isLoading = false;
-  bool _emailSent = false;
+  bool _otpVerified = false;
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _otpController.dispose();
     super.dispose();
   }
 
-  void _handleResetPassword() async {
+  void _handleVerifyOTP() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
@@ -36,14 +33,23 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
       setState(() {
         _isLoading = false;
-        _emailSent = true;
+        _otpVerified = true;
       });
 
-      Navigator.push(context, MaterialPageRoute(builder: (builder) => OTPVerificationScreen()));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('OTP verified successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        // Navigate to New Password screen after successful verification
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => const NewPasswordScreen()));
+      }
     }
   }
 
-  void _resendEmail() async {
+  void _resendOTP() async {
     setState(() {
       _isLoading = true;
     });
@@ -58,7 +64,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Reset email sent again!'),
+          content: Text('OTP sent again!'),
           backgroundColor: Colors.green,
         ),
       );
@@ -91,13 +97,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 Column(
                   children: [
                     Icon(
-                      _emailSent ? Icons.mark_email_read : Icons.lock_reset,
+                      _otpVerified ? Icons.check_circle : Icons.verified_user,
                       size: 60,
                       color: Colors.blue[600],
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      _emailSent ? 'Check Your Email' : 'Forgot Password?',
+                      _otpVerified ? 'OTP Verified' : 'Verify OTP',
                       style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -106,9 +112,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      _emailSent
-                          ? 'We\'ve sent a password reset link to your email address'
-                          : 'Enter your email address and we\'ll send you a link to reset your password',
+                      _otpVerified
+                          ? 'Your OTP has been verified successfully'
+                          : 'Enter the 6-digit code sent to your email',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 16,
@@ -120,26 +126,27 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
                 const SizedBox(height: 40),
 
-                if (!_emailSent) ...[
-                  // Email Form
+                if (!_otpVerified) ...[
+                  // OTP Form
                   Form(
                     key: _formKey,
                     child: CustomTextFormField(
-                      hintText: 'Email Address',
-                      prefixIcon: Icons.email_outlined,
-                      controller: _emailController,
-                      validator: FormValidators.validateEmail,
-                      keyboardType: TextInputType.emailAddress,
+                      hintText: 'Enter 6-digit OTP',
+                      prefixIcon: Icons.vpn_key,
+                      controller: _otpController,
+                      // validator: FormValidators.validateOTP,
+                      keyboardType: TextInputType.number,
+                      // maxLines: 6,
                     ),
                   ),
 
                   const SizedBox(height: 24),
 
-                  // Send Reset Email Button
+                  // Verify OTP Button
                   SizedBox(
                     height: 52,
                     child: ElevatedButton(
-                      onPressed: _isLoading ? null : _handleResetPassword,
+                      onPressed: _isLoading ? null : _handleVerifyOTP,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue[600],
                         foregroundColor: Colors.white,
@@ -162,7 +169,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           ),
                           SizedBox(width: 12),
                           Text(
-                            'Sending...',
+                            'Verifying...',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -171,9 +178,25 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ],
                       )
                           : const Text(
-                        'Send Reset Link',
+                        'Verify OTP',
                         style: TextStyle(
                           fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Resend OTP Link
+                  Center(
+                    child: TextButton(
+                      onPressed: _isLoading ? null : _resendOTP,
+                      child: Text(
+                        'Resend OTP',
+                        style: TextStyle(
+                          color: Colors.blue[600],
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -197,68 +220,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'Reset email sent to:',
+                          'OTP Verified',
                           style: TextStyle(
                             color: Colors.green[700],
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          _emailController.text,
-                          style: TextStyle(
-                            color: Colors.green[800],
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
                       ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Resend Email Button
-                  SizedBox(
-                    height: 52,
-                    child: OutlinedButton(
-                      onPressed: _isLoading ? null : _resendEmail,
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.blue[600]!),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: _isLoading
-                          ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.blue[600]!),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            'Sending...',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.blue[600],
-                            ),
-                          ),
-                        ],
-                      )
-                          : Text(
-                        'Resend Email',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.blue[600],
-                        ),
-                      ),
                     ),
                   ),
                 ],
@@ -270,13 +238,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Remember your password? ',
+                      'Didn\'t receive a code? ',
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
                       child: Text(
-                        'Sign In',
+                        'Try Again',
                         style: TextStyle(
                           color: Colors.blue[600],
                           fontWeight: FontWeight.w600,

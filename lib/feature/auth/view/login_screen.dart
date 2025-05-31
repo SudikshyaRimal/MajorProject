@@ -4,6 +4,7 @@ import 'package:sewa_mitra/feature/auth/view/register_screen.dart';
 
 import '../../../core/cust_text_form_field.dart';
 import '../../../core/form_validators.dart';
+import '../../dashboard/dashboard.dart';
 import 'forgot_password_screen.dart';
 
 import 'package:flutter/material.dart';
@@ -72,8 +73,12 @@ class _LoginScreenState extends State<LoginScreen> {
             backgroundColor: Colors.green,
           ),
         );
+
+
         // Navigate to the home screen after successful login (commented out for now)
         // Navigator.pushReplacementNamed(context, '/home');
+
+        Navigator.push(context, MaterialPageRoute(builder: (builder) => DashboardScreen()));
       }
     }
   }
