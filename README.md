@@ -1,16 +1,35 @@
 # sewa_mitra
+A new Flutter project paired with a Node.js + Express.js + MongoDB backend.
 
-A new Flutter project.
+# Getting Started
+This project is a starting point for a Flutter application with a backend API built using Node.js, Express.js, and MongoDB.
 
-## Getting Started
+# Flutter Frontend
+A mobile app built with Flutter for managing user authentication, profile editing, and service requests.
 
-This project is a starting point for a Flutter application.
+# If this is your first Flutter project, here are some useful resources to get started:
 
-A few resources to get you started if this is your first Flutter project:
+- Lab: Write your first Flutter app
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Cookbook: Useful Flutter samples
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Flutter documentation – tutorials, samples, guidance on mobile development, and API reference
+
+# Backend API
+A RESTful API built with Node.js and Express.js, connected to MongoDB for data storage.
+
+# The backend handles:
+
+- User registration and login with JWT authentication
+
+- User profile retrieval and updates
+
+- Password change functionality
+
+# If you are new to backend development with Node.js and MongoDB, check out these resources:
+
+- Node.js official docs
+
+- Express.js guide
+
+- MongoDB official docs
