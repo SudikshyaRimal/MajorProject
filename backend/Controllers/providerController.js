@@ -1,7 +1,9 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Provider from "../models/Provider.js";
+import SubService from "../models/SubService.js";
 import transporter from "../config/nodemailer.js";
+
 
 // Register Provider
 export const registerProvider = async (req, res) => {
@@ -210,3 +212,61 @@ export const resetPasswordProvider = async (req, res) => {
     return res.json({ success: false, message: error.message });
   }
 };
+export const updateProviderProfile = async (req, res) => {
+  try {
+    const { providerId, subserviceId, experience, price } = req.body;
+
+    // Check required fields
+    if (!providerId || !subserviceId || !experience || !price) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // Validate subservice exists
+    const subservice = await SubService.findById(subserviceId);
+    if (!subservice) {
+      return res.status(400).json({ message: "Subservice not found" });
+    }
+
+    const provider = await Provider.findById(providerId);
+    if (!provider) {
+      return res.status(404).json({ message: "Provider not found" });
+    }
+
+    // Update service fields
+    provider.subservice = subserviceId;
+    provider.experience = experience;
+    provider.price = price;
+
+    await provider.save();
+
+    res.status(200).json({ message: "Profile updated successfully", provider });
+  } catch (error) {
+    console.error("Update Provider Error:", error.message);
+    res.status(500).json({ message: "Server error updating provider" });
+  }
+};
+
+export const getProvidersByCategory = async (req, res) => {
+  const { categoryId } = req.params;
+
+  try {
+    // 1. Get all subservices for this category
+    const subservices = await SubService.find({ category: categoryId });
+
+    // 2. Get providers whose subservice is in these subservices
+    const providers = await Provider.find({
+      subservice: { $in: subservices.map((s) => s._id) },
+    })
+      .populate({
+        path: "subservice",
+        select: "name", // 👈 only include subservice name
+      })
+      .select("firstname lastname email subservice experience price"); // 👈 only these fields
+
+    res.status(200).json({ providers });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to get providers" });
+  }
+};
+
