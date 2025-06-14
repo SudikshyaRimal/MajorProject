@@ -5,7 +5,9 @@ import {
   logoutProvider,
   sendResetOtpProvider,
   verifyResetOtpProvider,
-  resetPasswordProvider
+  resetPasswordProvider,
+   updateProviderProfile,
+ getProvidersByCategory
 } from "../Controllers/providerController.js";
 
 const router = express.Router();
@@ -27,7 +29,11 @@ router.post("/verify-otp", verifyResetOtpProvider);
 
 // POST: Reset Password
 router.post("/reset-password", resetPasswordProvider);
+router.put("/update-profile", updateProviderProfile);
+router.get("/by-category/:categoryId", getProvidersByCategory);
+
 
 export default router;
+
 
 
