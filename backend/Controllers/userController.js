@@ -208,3 +208,75 @@ export const resetPassword = async (req, res) => {
   }
 };
 
+
+// yo part profile ko ho last wala ko
+//update profile
+
+export const editProfile = async (req, res) => {
+  try {
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ success: false, message: "Unauthorized: User not authenticated" });
+    }
+
+    const { firstname, lastname, email, address } = req.body;
+    const userId = req.user._id;
+
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { firstname, lastname, email, address },
+      { new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Update profile error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// change password
+
+
+export const changePassword = async (req, res) => {
+  try {
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ success: false, message: "Unauthorized: User not authenticated" });
+    }
+
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ success: false, message: "New passwords do not match" });
+    }
+
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: "Old password is incorrect" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Password changed successfully" });
+  } catch (error) {
+    console.error("Change password error:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
