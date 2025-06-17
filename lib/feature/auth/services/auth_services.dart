@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sewa_mitra/feature/auth/model/otp_response_model.dart';
 import 'package:sewa_mitra/feature/auth/model/success_model.dart';
 import '../../../config/services/remote_services/api_endpoints.dart';
 import '../../../config/services/remote_services/errors/failure.dart';
@@ -44,6 +45,23 @@ class AuthServices {
         if (response.statusCode == 200 || response.statusCode == 201) {
           // Parse and return success response
           return SuccessModel.fromJson(response.data);
+        }
+        // Throw error for unexpected response status
+        throw Failure(message: 'Unexpected response format');
+      },
+    );
+  }
+  Future<OtpResponseModel> sendOtp({required Map<String, dynamic> data}) async {
+    // Make POST request to registration endpoint
+    final result = await _httpService.post(ApiEndPoints.userOtp, data: data);
+    return result.fold(
+      // Handle failure case by throwing the failure
+          (failure) => throw failure,
+      // Handle success case by parsing response
+          (response) {
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          // Parse and return success response
+          return OtpResponseModel.fromJson(response.data);
         }
         // Throw error for unexpected response status
         throw Failure(message: 'Unexpected response format');
