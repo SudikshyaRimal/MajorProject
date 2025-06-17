@@ -1,78 +1,44 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sewa_mitra/feature/auth/ctrl/otp_controller.dart';
 import '../../../core/cust_text_form_field.dart';
-import '../../../core/form_validators.dart';
 
-class OTPVerificationScreen extends StatefulWidget {
-  const OTPVerificationScreen({super.key});
+class OtpVerificationScreen extends ConsumerStatefulWidget {
+  const OtpVerificationScreen({super.key});
 
   @override
-  State<OTPVerificationScreen> createState() => _OTPVerificationScreenState();
+  ConsumerState<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
 }
 
-class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _otpController = TextEditingController();
+class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
   bool _isLoading = false;
   bool _otpVerified = false;
 
-  @override
-  void dispose() {
-    _otpController.dispose();
-    super.dispose();
-  }
+  void _handleOtp() async {
+    setState(() => _isLoading = true);
 
-  void _handleVerifyOTP() async {
-    if (_formKey.currentState!.validate()) {
+    final controller = OtpController(ref);
+    final success = await controller.handleOtp(context);
+    if (success) {
       setState(() {
-        _isLoading = true;
-      });
-
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
-
-      setState(() {
-        _isLoading = false;
         _otpVerified = true;
       });
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('OTP verified successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        // Navigate to New Password screen after successful verification
-        // Navigator.push(context, MaterialPageRoute(builder: (context) => const NewPasswordScreen()));
-      }
     }
+
+    setState(() => _isLoading = false);
   }
 
-  void _resendOTP() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 2));
-
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('OTP sent again!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    }
+  void _resendOTP() {
+    // Simulate resend or call actual resend logic from controller
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('OTP resent'), backgroundColor: Colors.blue),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final controller = OtpController(ref);
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -88,12 +54,9 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 40),
-
-                // Icon and Title
                 Column(
                   children: [
                     Icon(
@@ -104,11 +67,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                     const SizedBox(height: 16),
                     Text(
                       _otpVerified ? 'OTP Verified' : 'Verify OTP',
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
+                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -116,44 +75,29 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                           ? 'Your OTP has been verified successfully'
                           : 'Enter the 6-digit code sent to your email',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(color: Colors.grey[600]),
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 40),
-
                 if (!_otpVerified) ...[
-                  // OTP Form
                   Form(
-                    key: _formKey,
+                    key: controller.otpFormKey,
                     child: CustomTextFormField(
                       hintText: 'Enter 6-digit OTP',
                       prefixIcon: Icons.vpn_key,
-                      controller: _otpController,
-                      // validator: FormValidators.validateOTP,
+                      controller: controller.emailController,
                       keyboardType: TextInputType.number,
-                      // maxLines: 6,
                     ),
                   ),
-
                   const SizedBox(height: 24),
-
-                  // Verify OTP Button
                   SizedBox(
                     height: 52,
                     child: ElevatedButton(
-                      onPressed: _isLoading ? null : _handleVerifyOTP,
+                      onPressed: _isLoading ? null : _handleOtp,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue[600],
-                        foregroundColor: Colors.white,
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       child: _isLoading
                           ? const Row(
@@ -168,42 +112,20 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                             ),
                           ),
                           SizedBox(width: 12),
-                          Text(
-                            'Verifying...',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                          Text('Verifying...', style: TextStyle(fontWeight: FontWeight.w600)),
                         ],
                       )
-                          : const Text(
-                        'Verify OTP',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                          : const Text('Verify OTP', style: TextStyle(fontWeight: FontWeight.w600)),
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
-                  // Resend OTP Link
                   Center(
                     child: TextButton(
                       onPressed: _isLoading ? null : _resendOTP,
-                      child: Text(
-                        'Resend OTP',
-                        style: TextStyle(
-                          color: Colors.blue[600],
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      child: Text('Resend OTP', style: TextStyle(color: Colors.blue[600])),
                     ),
                   ),
                 ] else ...[
-                  // Success State
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
@@ -213,47 +135,24 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                     ),
                     child: Column(
                       children: [
-                        Icon(
-                          Icons.check_circle,
-                          color: Colors.green[600],
-                          size: 32,
-                        ),
+                        Icon(Icons.check_circle, color: Colors.green[600], size: 32),
                         const SizedBox(height: 12),
-                        Text(
-                          'OTP Verified',
-                          style: TextStyle(
-                            color: Colors.green[700],
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        Text('OTP Verified', style: TextStyle(color: Colors.green[700])),
                       ],
                     ),
                   ),
                 ],
-
                 const SizedBox(height: 32),
-
-                // Back to Login Link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      'Didn\'t receive a code? ',
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
+                    Text('Didn\'t receive a code? ', style: TextStyle(color: Colors.grey[600])),
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: Text(
-                        'Try Again',
-                        style: TextStyle(
-                          color: Colors.blue[600],
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      child: Text('Try Again', style: TextStyle(color: Colors.blue[600])),
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 40),
               ],
             ),
