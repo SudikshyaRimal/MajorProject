@@ -39,7 +39,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         _emailSent = true;
       });
 
-      Navigator.push(context, MaterialPageRoute(builder: (builder) => OTPVerificationScreen()));
+      Navigator.push(context, MaterialPageRoute(builder: (builder) => OtpVerificationScreen()));
     }
   }
 

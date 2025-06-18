@@ -17,7 +17,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // List of pages corresponding to each navigation item
   final List<Widget> _pages = [
     const HomePage(),
-    const HistoryPage(),
+     HistoryPage(),
     const ProfilePage(),
     const AboutUsPage(),
   ];

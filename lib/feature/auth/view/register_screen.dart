@@ -155,6 +155,9 @@ class RegistrationScreen extends ConsumerWidget {
                       GestureDetector(
                         onTap: () {
                           // Navigate to login
+
+
+
                           Navigator.push(context, MaterialPageRoute(builder: (builder)=> LoginScreen()));
                         },
                         child: Text(

@@ -63,7 +63,7 @@ class LoginController {
   // Triggers UI update by calling setState on the LoginScreen
   void setState(BuildContext context) {
     if (context.mounted) {
-      (context as State<LoginScreen>).setState(() {});
+      // (context as State<LoginScreen>).setState(() {});
     }
   }
 
