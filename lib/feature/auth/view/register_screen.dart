@@ -1,66 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sewa_mitra/feature/auth/ctrl/register_ctrl.dart';
 import 'package:sewa_mitra/feature/auth/view/login_screen.dart';
 
 import '../../../core/cust_text_form_field.dart';
 import '../../../core/form_validators.dart';
 
 // Registration Screen with Form Validation
-class RegistrationScreen extends StatefulWidget {
-  const RegistrationScreen({super.key});
+class RegistrationScreen extends ConsumerWidget {
 
-  @override
-  State<RegistrationScreen> createState() => _RegistrationScreenState();
-}
-
-class _RegistrationScreenState extends State<RegistrationScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _addressController = TextEditingController();
 
   bool _isLoading = false;
   String _selectedUserType = '';
 
-  @override
-  void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _addressController.dispose();
-    super.dispose();
-  }
 
-  void _handleRegistration(String userType) async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-        _selectedUserType = userType;
-      });
-
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      // Handle successful registration
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Registration successful as $userType!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    }
-  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+
+    final controller = RegisterController(ref);
+
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: SafeArea(
@@ -68,7 +28,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Form(
-              key: _formKey,
+              key: controller.registerFormKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -109,7 +69,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   CustomTextFormField(
                     hintText: 'First Name',
                     prefixIcon: Icons.person_outline,
-                    controller: _firstNameController,
+                    controller: controller.firstNameController,
                     validator: FormValidators.validateName,
                     textCapitalization: TextCapitalization.words,
                   ),
@@ -117,7 +77,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   CustomTextFormField(
                     hintText: 'Last Name',
                     prefixIcon: Icons.person_outline,
-                    controller: _lastNameController,
+                    controller: controller.lastNameController,
                     validator: FormValidators.validateName,
                     textCapitalization: TextCapitalization.words,
                   ),
@@ -125,7 +85,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   CustomTextFormField(
                     hintText: 'Email Address',
                     prefixIcon: Icons.email_outlined,
-                    controller: _emailController,
+                    controller: controller.emailController,
                     validator: FormValidators.validateEmail,
                     keyboardType: TextInputType.emailAddress,
                   ),
@@ -133,7 +93,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   CustomTextFormField(
                     hintText: 'Password',
                     prefixIcon: Icons.lock_outline,
-                    controller: _passwordController,
+                    controller: controller.passwordController,
                     validator: FormValidators.validatePassword,
                     obscureText: true,
                     showPasswordToggle: true,
@@ -142,7 +102,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   CustomTextFormField(
                     hintText: 'Address',
                     prefixIcon: Icons.location_on_outlined,
-                    controller: _addressController,
+                    controller: controller.addressController,
                     validator: (value) => FormValidators.validateRequired(value, fieldName: 'Address'),
                     maxLines: 2,
                     textCapitalization: TextCapitalization.words,
@@ -168,7 +128,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     icon: Icons.person,
                     isPrimary: true,
                     isLoading: _isLoading && _selectedUserType == 'Service User',
-                    onPressed: () => _handleRegistration('Service User'),
+                    onPressed: () => controller.handleRegistration(context),
                   ),
 
                   const SizedBox(height: 12),
@@ -179,7 +139,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     icon: Icons.work,
                     isPrimary: false,
                     isLoading: _isLoading && _selectedUserType == 'Service Provider',
-                    onPressed: () => _handleRegistration('Service Provider'),
+                    onPressed: () => controller.handleRegistration(context),
                   ),
 
                   const SizedBox(height: 24),
@@ -195,6 +155,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       GestureDetector(
                         onTap: () {
                           // Navigate to login
+
+
+
                           Navigator.push(context, MaterialPageRoute(builder: (builder)=> LoginScreen()));
                         },
                         child: Text(

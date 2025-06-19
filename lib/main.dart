@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sewa_mitra/config/local_db/hive_setup.dart';
 import 'package:sewa_mitra/feature/auth/view/login_screen.dart';
+import 'package:sewa_mitra/feature/dashboard/dashboard.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await HiveSetup.initHive;
+  runApp(const ProviderScope(child: MyApp()));
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -18,7 +26,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: LoginScreen(),
+      // home: LoginScreen(),
+      home: DashboardScreen(),
     );
   }
 }
