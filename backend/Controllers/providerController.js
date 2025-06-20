@@ -19,14 +19,13 @@ export const registerProvider = async (req, res) => {
       return res.status(409).json({ success: false, message: "Provider already exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10); 
+    const hashedPassword = await bcrypt.hash(password, 10);
     const provider = new Provider({
       firstname,
-      lastname, 
+      lastname,
       email,
       password: hashedPassword,
       address,
-      // ❌ serviceType removed here (will be added later via update)
     });
 
     await provider.save();
@@ -42,7 +41,6 @@ export const registerProvider = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    // Send welcome email
     const mailOptions = {
       from: process.env.SENDER_EMAIL,
       to: email,
@@ -52,7 +50,16 @@ export const registerProvider = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
 
-    res.status(201).json({ success: true, message: "Provider registered successfully" });
+    res.status(201).json({
+      success: true,
+      message: "Provider registered successfully",
+      provider: {
+        id: provider._id,
+        firstname: provider.firstname,
+        lastname: provider.lastname,
+        email: provider.email,
+      }
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
