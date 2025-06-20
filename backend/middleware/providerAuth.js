@@ -1,25 +1,21 @@
-import jwt from 'jsonwebtoken';
-
-const providerAuth = async (req, res, next) => {
+import jwt from "jsonwebtoken";
+import Provider from "../models/Provider.js";
+const providerProtect = async (req, res, next) => {
   try {
-    const { token } = req.cookies;
-
-    if (!token) {
-      return res.status(401).json({ success: false, message: 'Not authorized. Login again' });
-    }
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ message: "No token provided" });
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const provider = await Provider.findById(decoded.id).select("-password");
 
-    // Attach provider ID to req object
-    req.providerId = decoded.id;
+    if (!provider) return res.status(401).json({ message: "Invalid token" });
 
+    req.provider = provider;
     next();
-  } catch (error) {
-    res.status(401).json({
-      success: false,
-      message: 'Token verification failed: ' + error.message
-    });
+  } catch (err) {
+    res.status(401).json({ message: "Auth failed" });
   }
 };
 
-export default providerAuth;
+export default providerProtect;
+
