@@ -9,9 +9,7 @@ import adminRoutes from './routes/adminRoutes.js';
 import providerRoutes from './routes/providerRoutes.js';
 import categoryRoutes from "./routes/categoryRoutes.js";
 import subserviceRoutes from "./routes/subserviceRoutes.js";
-import bookingRoutes from './routes/bookingRoutes.js';
-import bookingHistoryRoutes from './routes/bookingHistoryRoutes.js';
-
+import bookingRoute from "./routes/bookingRoutes.js";
 const app = express();
 const port = process.env.PORT || 4000;
 
@@ -29,10 +27,8 @@ app.use("/api/provider", providerRoutes);
 app.use('/api/admin', adminRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/subservice", subserviceRoutes);
-app.use('/api/bookings', bookingRoutes);
-app.use('/api/booking-history', bookingHistoryRoutes);
 
-
+app.use("/api/booking", bookingRoute);
 app.get("/", (req, res) => {
   res.send("API working");
 });
