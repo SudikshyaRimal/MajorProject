@@ -16,14 +16,16 @@ const bookingSchema = new mongoose.Schema(
       required: true
     },
     category: {
-      type: mongoose.Schema.Types.ObjectId,
+      type:
+      String,
+      //mongoose.Schema.Types.ObjectId,
       ref: 'Category', // renamed from "service" to correct model
       required: true
     },
     subservice: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'SubService',
-      required: true
+      required: false
     },
     servicePrice: {
       type: Number,
