@@ -13,3 +13,4 @@ router.post("/create", createCategory);
 router.get("/all", getAllCategories);
 
 export default router;
+
