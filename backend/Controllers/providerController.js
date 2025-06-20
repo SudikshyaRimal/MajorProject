@@ -3,13 +3,13 @@ import jwt from "jsonwebtoken";
 import Provider from "../models/Provider.js";
 import SubService from "../models/SubService.js";
 import transporter from "../config/nodemailer.js";
-
+import Booking from "../models/BookingModel.js";
 
 // Register Provider
 export const registerProvider = async (req, res) => {
-  const { firstname, lastname, email, password, address, serviceType } = req.body;
+  const { firstname, lastname, email, password, address } = req.body;
 
-  if (!firstname || !lastname || !email || !password || !address || !serviceType) {
+  if (!firstname || !lastname || !email || !password || !address) {
     return res.status(400).json({ success: false, message: "Missing required fields" });
   }
 
@@ -19,14 +19,14 @@ export const registerProvider = async (req, res) => {
       return res.status(409).json({ success: false, message: "Provider already exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10); 
     const provider = new Provider({
       firstname,
-      lastname,
+      lastname, 
       email,
       password: hashedPassword,
       address,
-      serviceType,
+      // ❌ serviceType removed here (will be added later via update)
     });
 
     await provider.save();
@@ -42,6 +42,7 @@ export const registerProvider = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
+    // Send welcome email
     const mailOptions = {
       from: process.env.SENDER_EMAIL,
       to: email,
@@ -56,6 +57,7 @@ export const registerProvider = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 // Login Provider
 export const loginProvider = async (req, res) => {
@@ -214,10 +216,10 @@ export const resetPasswordProvider = async (req, res) => {
 };
 export const updateProviderProfile = async (req, res) => {
   try {
-    const { providerId, subserviceId, experience, price } = req.body;
+    const { providerId,serviceType, subserviceId, experience, price } = req.body;
 
     // Check required fields
-    if (!providerId || !subserviceId || !experience || !price) {
+    if (!providerId ||!serviceType|| !subserviceId || !experience || !price) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -233,6 +235,7 @@ export const updateProviderProfile = async (req, res) => {
     }
 
     // Update service fields
+    provider.serviceType = serviceType; // Assuming serviceType is passed in the request body
     provider.subservice = subserviceId;
     provider.experience = experience;
     provider.price = price;
@@ -269,4 +272,45 @@ export const getProvidersByCategory = async (req, res) => {
     res.status(500).json({ error: "Failed to get providers" });
   }
 };
+
+export const getProviderBookings = async (req, res) => {
+  try {
+    const providerId = req.provider._id; // must come from provider auth middleware
+
+    const bookings = await Booking.find({ provider: providerId })
+      .populate("user", "firstname lastname email")
+      .populate("category", "name")
+      .populate("subservice", "name");
+
+    res.json({ success: true, bookings });
+  } catch (error) {
+    console.error("Error fetching provider bookings:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export const updateBookingStatus = async (req, res) => {
+  try {
+    const providerId = req.provider._id;
+    const { bookingId, action } = req.body;
+
+    if (!["confirmed", "cancelled"].includes(action)) {
+      return res.status(400).json({ message: "Invalid action" });
+    }
+
+    const booking = await Booking.findOne({ _id: bookingId, provider: providerId });
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    booking.status = action;
+    await booking.save();
+
+    res.json({ success: true, message: `Booking ${action}`, booking });
+  } catch (error) {
+    console.error("Status update error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 
