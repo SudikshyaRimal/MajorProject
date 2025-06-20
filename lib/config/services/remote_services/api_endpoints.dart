@@ -8,6 +8,11 @@ class ApiEndPoints {
   static String userLogin = 'user/login';
   static String userRegistration = 'user/register';
   static String userOtp='user/send-reset-otp';
+  static String userCategory='user/create';
+
+   //user endpoints
+  static String getAllCategory='category/all';
+  static String getWorkers='provider/getWorkers';
 
 
 }

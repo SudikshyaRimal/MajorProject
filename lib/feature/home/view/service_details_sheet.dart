@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sewa_mitra/feature/booking/book_now_page.dart';
-import '../model/service.dart';
+import 'package:sewa_mitra/feature/home/model/provider_model.dart';
 
 class ServiceDetailsSheet extends StatelessWidget {
-  final Service service;
+  final ProviderModel service;
 
   const ServiceDetailsSheet({super.key, required this.service});
 
@@ -23,7 +23,7 @@ class ServiceDetailsSheet extends StatelessWidget {
           Container(
             margin: const EdgeInsets.only(top: 10),
             height: 4,
-            width: 32, // Smaller handle
+            width: 32,
             decoration: BoxDecoration(
               color: Colors.grey[300],
               borderRadius: BorderRadius.circular(2),
@@ -31,43 +31,43 @@ class ServiceDetailsSheet extends StatelessWidget {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(16), // Reduced padding
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       Container(
-                        width: 64, // Smaller icon container
+                        width: 64,
                         height: 64,
                         decoration: BoxDecoration(
                           color: Colors.blue[50],
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(
-                          service.image,
+                          Icons.build, // Default icon, replace with appropriate icon
                           color: Colors.blue[600],
-                          size: 32, // Smaller icon
+                          size: 32,
                         ),
                       ),
-                      const SizedBox(width: 12), // Reduced spacing
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              service.name,
+                              '${service.firstname} ${service.lastname}',
                               style: const TextStyle(
-                                fontSize: 20, // Smaller font
+                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black87,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              service.category,
+                              service.serviceType,
                               style: TextStyle(
-                                fontSize: 14, // Smaller font
+                                fontSize: 14,
                                 color: Colors.grey[600],
                               ),
                             ),
@@ -77,13 +77,13 @@ class ServiceDetailsSheet extends StatelessWidget {
                                 Icon(
                                   Icons.star,
                                   color: Colors.amber[600],
-                                  size: 16, // Smaller icon
+                                  size: 16,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
                                   '${service.rating} (125 reviews)',
                                   style: TextStyle(
-                                    fontSize: 12, // Smaller font
+                                    fontSize: 12,
                                     color: Colors.grey[700],
                                   ),
                                 ),
@@ -94,27 +94,27 @@ class ServiceDetailsSheet extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16), // Reduced spacing
+                  const SizedBox(height: 16),
                   const Text(
                     'Description',
                     style: TextStyle(
-                      fontSize: 16, // Smaller font
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '${service.description}. We provide high-quality service with experienced professionals. Our team is available 24/7 to handle all your needs with care and precision.',
+                    '${service.serviceType}. We provide high-quality service with experienced professionals. Our team is available 24/7 to handle all your needs with care and precision.',
                     style: TextStyle(
-                      fontSize: 14, // Smaller font
+                      fontSize: 14,
                       color: Colors.grey[600],
                       height: 1.5,
                     ),
                   ),
                   const SizedBox(height: 16),
                   Container(
-                    padding: const EdgeInsets.all(12), // Reduced padding
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.grey[50],
                       borderRadius: BorderRadius.circular(10),
@@ -128,14 +128,14 @@ class ServiceDetailsSheet extends StatelessWidget {
                             const Text(
                               'Starting Price',
                               style: TextStyle(
-                                fontSize: 12, // Smaller font
+                                fontSize: 12,
                                 color: Colors.grey,
                               ),
                             ),
                             Text(
-                              service.price,
+                              '\$${service.price.toStringAsFixed(2)}',
                               style: TextStyle(
-                                fontSize: 18, // Smaller font
+                                fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blue[600],
                               ),
@@ -143,17 +143,17 @@ class ServiceDetailsSheet extends StatelessWidget {
                           ],
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), // Reduced padding
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: service.isAvailable ? Colors.green[50] : Colors.red[50],
+                            color: true ? Colors.green[50] : Colors.red[50], // Assume always available
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Text(
-                            service.isAvailable ? 'Available Now' : 'Currently Busy',
+                            true ? 'Available Now' : 'Currently Busy',
                             style: TextStyle(
-                              color: service.isAvailable ? Colors.green[700] : Colors.red[700],
+                              color: true ? Colors.green[700] : Colors.red[700],
                               fontWeight: FontWeight.w500,
-                              fontSize: 12, // Smaller font
+                              fontSize: 12,
                             ),
                           ),
                         ),
@@ -163,12 +163,14 @@ class ServiceDetailsSheet extends StatelessWidget {
                   const Spacer(),
                   SizedBox(
                     width: double.infinity,
-                    height: 48, // Smaller button
+                    height: 48,
                     child: ElevatedButton(
-                      onPressed: service.isAvailable
+                      onPressed: true
                           ? () {
-
-                        Navigator.push(context, MaterialPageRoute(builder: (builder) => BookNowPage()));
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const BookNowPage()),
+                        );
                       }
                           : null,
                       style: ElevatedButton.styleFrom(
@@ -180,9 +182,9 @@ class ServiceDetailsSheet extends StatelessWidget {
                         elevation: 0,
                       ),
                       child: Text(
-                        service.isAvailable ? 'Book Now' : 'Currently Unavailable',
+                        true ? 'Book Now' : 'Currently Unavailable',
                         style: const TextStyle(
-                          fontSize: 16, // Smaller font
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

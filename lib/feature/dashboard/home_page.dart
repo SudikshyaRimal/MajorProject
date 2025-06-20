@@ -1,41 +1,29 @@
-// Home Page
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sewa_mitra/feature/dashboard/profile_page.dart';
-import '../../core/const/app_strings.dart';
-import '../home/model/service.dart';
-import '../home/view/service_card.dart';
-import '../home/view/service_details_sheet.dart';
+import 'package:sewa_mitra/feature/home/model/provider_model.dart';
+import 'package:sewa_mitra/feature/home/view/service_card.dart';
+import 'package:sewa_mitra/feature/home/view/service_details_sheet.dart';
 
-class HomePage extends StatefulWidget {
+import '../home/ctrl/home_ctrl.dart';
+
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final homeState = ref.watch(homeControllerProvider);
+    final homeController = ref.read(homeControllerProvider.notifier);
+    final TextEditingController searchController = TextEditingController();
 
-class _HomePageState extends State<HomePage> {
-  final TextEditingController _searchController = TextEditingController();
-  String _selectedCategory = 'All';
+    // Filtered providers based on search query
+    List<ProviderModel> filteredProviders = homeState.providers.where((provider) {
+      final query = homeState.searchQuery.toLowerCase();
+      return provider.firstname.toLowerCase().contains(query) ||
+          provider.lastname.toLowerCase().contains(query) ||
+          provider.serviceType.toLowerCase().contains(query);
+    }).toList();
 
-
-  List<Service> get _filteredServices {
-    List<Service> filtered = services;
-
-    if (_selectedCategory != 'All') {
-      filtered = filtered.where((service) => service.category == _selectedCategory).toList();
-    }
-
-    if (_searchController.text.isNotEmpty) {
-      filtered = filtered.where((service) =>
-      service.name.toLowerCase().contains(_searchController.text.toLowerCase()) ||
-          service.description.toLowerCase().contains(_searchController.text.toLowerCase())).toList();
-    }
-
-    return filtered;
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: CustomScrollView(
@@ -48,7 +36,7 @@ class _HomePageState extends State<HomePage> {
             flexibleSpace: FlexibleSpaceBar(
               background: SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8), // Reduced horizontal padding
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -62,32 +50,33 @@ class _HomePageState extends State<HomePage> {
                                 'Good Morning!',
                                 style: TextStyle(
                                   color: Colors.white70,
-                                  fontSize: 14, // Slightly smaller font
+                                  fontSize: 14,
                                 ),
                               ),
                               Text(
                                 'Find Your Service',
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 20, // Slightly smaller font
+                                  fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ],
                           ),
-
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               IconButton(
                                 onPressed: () {
-                                  // Handle notifications
-                                  Navigator.push(context, MaterialPageRoute(builder: (builder) =>  ProfilePage(),));
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const ProfilePage()),
+                                  );
                                 },
                                 icon: const Icon(
                                   Icons.person_rounded,
                                   color: Colors.white,
-                                  size: 24, // Slightly smaller icon
+                                  size: 24,
                                 ),
                               ),
                               IconButton(
@@ -97,14 +86,14 @@ class _HomePageState extends State<HomePage> {
                                 icon: const Icon(
                                   Icons.notifications_outlined,
                                   color: Colors.white,
-                                  size: 24, // Slightly smaller icon
+                                  size: 24,
                                 ),
                               ),
                             ],
-                          )
+                          ),
                         ],
                       ),
-                      const SizedBox(height: 12), // Reduced spacing
+                      const SizedBox(height: 12),
                       Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -118,8 +107,8 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                         child: TextField(
-                          controller: _searchController,
-                          onChanged: (value) => setState(() {}),
+                          controller: searchController,
+                          onChanged: (value) => homeController.setSearchQuery(value),
                           decoration: const InputDecoration(
                             hintText: 'Search for services...',
                             prefixIcon: Icon(Icons.search, color: Colors.grey),
@@ -138,25 +127,25 @@ class _HomePageState extends State<HomePage> {
           // Categories Section
           SliverToBoxAdapter(
             child: Container(
-              height: 40, // Reduced height
+              height: 40,
               margin: const EdgeInsets.symmetric(vertical: 12),
-              child: ListView.builder(
+              child: homeState.isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : ListView.builder(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16), // Reduced padding
-                itemCount: categories.length,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: homeState.categories.length,
                 itemBuilder: (context, index) {
-                  final category = categories[index];
-                  final isSelected = _selectedCategory == category;
+                  final category = homeState.categories[index];
+                  final isSelected = homeState.selectedCategory == category.name;
 
                   return GestureDetector(
                     onTap: () {
-                      setState(() {
-                        _selectedCategory = category;
-                      });
+                      homeController.setSelectedCategory(category.name);
                     },
                     child: Container(
-                      margin: const EdgeInsets.only(right: 8), // Reduced margin
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Reduced padding
+                      margin: const EdgeInsets.only(right: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
                         color: isSelected ? Colors.blue[600] : Colors.white,
                         borderRadius: BorderRadius.circular(20),
@@ -165,11 +154,11 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       child: Text(
-                        category,
+                        category.name,
                         style: TextStyle(
                           color: isSelected ? Colors.white : Colors.grey[700],
                           fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                          fontSize: 14, // Smaller font
+                          fontSize: 14,
                         ),
                       ),
                     ),
@@ -179,8 +168,39 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-          // Services List
-          _filteredServices.isEmpty
+          // Providers List
+          homeState.isLoading
+              ? SliverFillRemaining(child: Center(child: CircularProgressIndicator()))
+              : homeState.error != null
+              ? SliverFillRemaining(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 48,
+                    color: Colors.red[400],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    homeState.error!,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  ElevatedButton(
+                    onPressed: () => homeController.fetchCategories(),
+                    child: Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          )
+              : filteredProviders.isEmpty
               ? SliverFillRemaining(
             child: Center(
               child: Column(
@@ -188,7 +208,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Icon(
                     Icons.search_off,
-                    size: 48, // Smaller icon
+                    size: 48,
                     color: Colors.grey[400],
                   ),
                   const SizedBox(height: 12),
@@ -213,17 +233,17 @@ class _HomePageState extends State<HomePage> {
             ),
           )
               : SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16), // Reduced padding
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                  final service = _filteredServices[index];
+                  final provider = filteredProviders[index];
                   return ServiceCard(
-                    service: service,
-                    onTap: () => _showServiceDetails(service),
+                    service: provider,
+                    onTap: () => _showServiceDetails(context, provider),
                   );
                 },
-                childCount: _filteredServices.length,
+                childCount: filteredProviders.length,
               ),
             ),
           ),
@@ -232,20 +252,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _showServiceDetails(Service service) {
+  void _showServiceDetails(BuildContext context, ProviderModel provider) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => ServiceDetailsSheet(service: service),
+      builder: (context) => ServiceDetailsSheet(service: provider),
     );
   }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
 }
-
-

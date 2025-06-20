@@ -1,10 +1,10 @@
 
 import 'package:flutter/material.dart';
 
-import '../model/service.dart';
+import 'package:sewa_mitra/feature/home/model/provider_model.dart';
 
 class ServiceCard extends StatelessWidget {
-  final Service service;
+  final ProviderModel service;
   final VoidCallback onTap;
 
   const ServiceCard({
@@ -16,7 +16,7 @@ class ServiceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12), // Reduced margin
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -34,25 +34,25 @@ class ServiceCard extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.all(12), // Reduced padding
+            padding: const EdgeInsets.all(12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Service Icon
                 Container(
-                  width: 48, // Smaller icon container
+                  width: 48,
                   height: 48,
                   decoration: BoxDecoration(
                     color: Colors.blue[50],
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
-                    service.image,
+                    Icons.build, // Default icon, replace with appropriate icon based on serviceType
                     color: Colors.blue[600],
-                    size: 24, // Smaller icon
+                    size: 24,
                   ),
                 ),
-                const SizedBox(width: 12), // Reduced spacing
+                const SizedBox(width: 12),
 
                 // Service Info
                 Expanded(
@@ -64,9 +64,9 @@ class ServiceCard extends StatelessWidget {
                         children: [
                           Flexible(
                             child: Text(
-                              service.name,
+                              '${service.firstname} ${service.lastname}',
                               style: const TextStyle(
-                                fontSize: 16, // Smaller font
+                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black87,
                               ),
@@ -74,16 +74,16 @@ class ServiceCard extends StatelessWidget {
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3), // Smaller padding
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                             decoration: BoxDecoration(
-                              color: service.isAvailable ? Colors.green[50] : Colors.red[50],
+                              color: true ? Colors.green[50] : Colors.red[50], // Assume always available for simplicity
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
-                              service.isAvailable ? 'Available' : 'Busy',
+                              true ? 'Available' : 'Busy',
                               style: TextStyle(
-                                color: service.isAvailable ? Colors.green[700] : Colors.red[700],
-                                fontSize: 11, // Smaller font
+                                color: true ? Colors.green[700] : Colors.red[700],
+                                fontSize: 11,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -92,15 +92,15 @@ class ServiceCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        service.description,
+                        service.serviceType,
                         style: TextStyle(
-                          fontSize: 12, // Smaller font
+                          fontSize: 12,
                           color: Colors.grey[600],
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 6), // Reduced spacing
+                      const SizedBox(height: 6),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -109,13 +109,13 @@ class ServiceCard extends StatelessWidget {
                               Icon(
                                 Icons.star,
                                 color: Colors.amber[600],
-                                size: 14, // Smaller icon
+                                size: 14,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 service.rating.toString(),
                                 style: TextStyle(
-                                  fontSize: 12, // Smaller font
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.grey[700],
                                 ),
@@ -123,9 +123,9 @@ class ServiceCard extends StatelessWidget {
                             ],
                           ),
                           Text(
-                            service.price,
+                            '\$${service.price.toStringAsFixed(2)}',
                             style: TextStyle(
-                              fontSize: 14, // Smaller font
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color: Colors.blue[600],
                             ),

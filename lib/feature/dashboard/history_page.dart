@@ -57,14 +57,14 @@ class HistoryPage extends StatelessWidget {
     ),
   ];
 
-  void _showServiceDetails(BuildContext context, Service service) {
+/*  void _showServiceDetails(BuildContext context, Service service) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => ServiceDetailsSheet(service: service),
     );
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +113,9 @@ class HistoryPage extends StatelessWidget {
           final booking = _bookings[index];
           return BookingCard(
             booking: booking,
-            onTap: () => _showServiceDetails(context, booking.service),
+            onTap: () {
+              // _showServiceDetails(context, booking.service);
+            },
           );
         },
       ),
