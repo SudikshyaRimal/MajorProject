@@ -7,9 +7,11 @@ import {
   verifyResetOtpProvider,
   resetPasswordProvider,
    updateProviderProfile,
- getProvidersByCategory
+ getProvidersByCategory,
+getProviderBookings, updateBookingStatus
 } from "../Controllers/providerController.js";
-import Provider from "../models/Provider.js"; // Import the Provider model
+import providerProtect from "../middleware/providerAuth.js";
+
 const router = express.Router();
 
 // POST: Register Provider
@@ -31,27 +33,9 @@ router.post("/verify-otp", verifyResetOtpProvider);
 router.post("/reset-password", resetPasswordProvider);
 router.put("/update-profile", updateProviderProfile);
 router.get("/by-category/:categoryId", getProvidersByCategory);
-// Route: GET /providers?category=Painter
-router.get('/getWorkers', async (req, res) => {
-  const category = req.query.category;
 
-  if (!category) {
-
-    return res.status(400).json({ error: "Category is required in query string (e.g. ?category=Painter)" });
-  }
-if (category == "all") {
-  const providers = await Provider.find();
-    return res.json(providers);
-  
-}
-  try {
-    const providers = await Provider.find({ serviceType: category });
-    res.json(providers);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch providers' });
-  }
-});
-
+router.get("/bookings", providerProtect, getProviderBookings);
+router.post("/booking/status", providerProtect, updateBookingStatus);
 
 export default router;
 
