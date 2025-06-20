@@ -3,22 +3,27 @@
 import Booking from "../models/BookingModel.js";
 import Provider from "../models/Provider.js";
 import BookingHistory from "../models/BookingHistory.js";
+import mongoose from "mongoose";
 
 const createBooking = async (req, res) => {
   try {
     const userId = req.user._id;
     const {fullname, providerId, date, time, location } = req.body;
-
-    const provider = await Provider.findById(providerId).populate("subservice");
-    if (!provider || !provider.subservice) {
-      return res.status(404).json({ message: "Provider or subservice not found" });
-    }
+if (!mongoose.Types.ObjectId.isValid(providerId)) {
+  return res.status(400).json({ message: "Invalid provider ID" });
+}
+    const provider = await Provider.findById(providerId)
+    
+    //.populate("subservice");
+    // if (!provider || !provider.subservice) {
+    //   return res.status(404).json({ message: "Provider or subservice not found" });
+    // }
 
     const booking = new Booking({
       user: userId,
       provider: provider._id,
-      category: provider.subservice.category,
-      subservice: provider.subservice._id,
+      category: provider.serviceType,
+      //subservice: provider.subservice._id,
       servicePrice: provider.price,
       date,
       time,
@@ -30,7 +35,7 @@ const createBooking = async (req, res) => {
   user: booking.user,
   provider: booking.provider,
   category: booking.category,
-  subservice: booking.subservice,
+  //subservice: booking.subservice,
   servicePrice: booking.servicePrice,
   date: booking.date,
   time: booking.time,
