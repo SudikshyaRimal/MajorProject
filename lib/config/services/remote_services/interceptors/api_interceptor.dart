@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../feature/auth/ctrl/access_token_provider.dart';
+import '../../../../feature/auth/ctrl/auth_provider.dart';
 import '../../../local_db/hive_data_source.dart';
 import '../api_endpoints.dart';
 

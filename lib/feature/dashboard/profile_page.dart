@@ -29,11 +29,11 @@ class ProfilePage extends StatelessWidget {
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.only(left: 8, top: 16, bottom: 8),
+      padding: const EdgeInsets.only(left: 8, top: 12, bottom: 4),
       child: Text(
         title,
         style: TextStyle(
-          fontSize: 18,
+          fontSize: 16,
           fontWeight: FontWeight.w600,
           color: Colors.grey[800],
         ),
@@ -43,28 +43,21 @@ class ProfilePage extends StatelessWidget {
 
   Widget _buildInfoTile(String label, String value, {IconData? icon, VoidCallback? onTap}) {
     return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 1,
+      color: Colors.white,
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         title: Text(
           label,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey[600],
-          ),
+          style: TextStyle(fontSize: 13, color: Colors.grey[600], fontWeight: FontWeight.w500),
         ),
         subtitle: Text(
           value,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
-          ),
+          style: const TextStyle(fontSize: 15.5, color: Colors.black87, fontWeight: FontWeight.w500),
         ),
-        leading: Icon(icon ?? Icons.info_outline, color: Colors.blue[600], size: 24),
+        leading: Icon(icon ?? Icons.info_outline, color: Colors.blue[600], size: 22),
         trailing: onTap != null
             ? Icon(Icons.open_in_new, color: Colors.blue[600], size: 20)
             : null,
@@ -81,20 +74,20 @@ class ProfilePage extends StatelessWidget {
         title: const Text('Profile'),
         backgroundColor: Colors.blue[600],
         foregroundColor: Colors.white,
-        elevation: 2,
-        shadowColor: Colors.black26,
+        elevation: 1,
+        shadowColor: Colors.black12,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Profile Picture
             Center(
               child: Container(
-                width: 120,
-                height: 120,
-                margin: const EdgeInsets.only(top: 20, bottom: 12),
+                width: 100,
+                height: 100,
+                margin: const EdgeInsets.only(top: 16, bottom: 8),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
@@ -104,35 +97,32 @@ class ProfilePage extends StatelessWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
                     ),
                   ],
                 ),
-                child: Icon(
-                  Icons.person,
-                  size: 70,
-                  color: Colors.white,
-                ),
+                child: const Icon(Icons.person, size: 60, color: Colors.white),
               ),
             ),
             Center(
               child: Text(
                 name,
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.grey[900],
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             // Personal Information
             _buildSectionHeader('Personal Information'),
             _buildInfoTile('Full Name', name, icon: Icons.person),
             _buildInfoTile('Email', email, icon: Icons.email),
             _buildInfoTile('Phone Number', phone, icon: Icons.phone),
+            const SizedBox(height: 12),
             // Social Links
             _buildSectionHeader('Social Links'),
             _buildInfoTile(
@@ -153,11 +143,11 @@ class ProfilePage extends StatelessWidget {
               icon: Icons.link,
               onTap: () => _launchUrl(context, github),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
             // Logout Button
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: 48,
               child: ElevatedButton(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -172,21 +162,16 @@ class ProfilePage extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue[600],
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 3,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  elevation: 2,
                 ),
                 child: const Text(
                   'Log Out',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
           ],
         ),
       ),

@@ -75,5 +75,5 @@ final List<String> categories = [
   'HVAC',
   'Cleaning',
   'Repair',
-  'Gardening'
+  // 'Gardening'
 ];

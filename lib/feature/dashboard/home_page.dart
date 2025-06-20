@@ -1,6 +1,6 @@
 // Home Page
 import 'package:flutter/material.dart';
-
+import 'package:sewa_mitra/feature/dashboard/profile_page.dart';
 import '../../core/const/app_strings.dart';
 import '../home/model/service.dart';
 import '../home/view/service_card.dart';
@@ -75,16 +75,33 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                          IconButton(
-                            onPressed: () {
-                              // Handle notifications
-                            },
-                            icon: const Icon(
-                              Icons.notifications_outlined,
-                              color: Colors.white,
-                              size: 24, // Slightly smaller icon
-                            ),
-                          ),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  // Handle notifications
+                                  Navigator.push(context, MaterialPageRoute(builder: (builder) =>  ProfilePage(),));
+                                },
+                                icon: const Icon(
+                                  Icons.person_rounded,
+                                  color: Colors.white,
+                                  size: 24, // Slightly smaller icon
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  // Handle notifications
+                                },
+                                icon: const Icon(
+                                  Icons.notifications_outlined,
+                                  color: Colors.white,
+                                  size: 24, // Slightly smaller icon
+                                ),
+                              ),
+                            ],
+                          )
                         ],
                       ),
                       const SizedBox(height: 12), // Reduced spacing

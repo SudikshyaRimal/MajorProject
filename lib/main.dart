@@ -4,6 +4,8 @@ import 'package:sewa_mitra/config/local_db/hive_setup.dart';
 import 'package:sewa_mitra/feature/auth/view/login_screen.dart';
 import 'package:sewa_mitra/feature/dashboard/dashboard.dart';
 
+import 'feature/auth/services/app_initializer_screen.dart';
+
 Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +29,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // home: LoginScreen(),
-      home: DashboardScreen(),
+      home: AppInitializerScreen(),
+      // home: DashboardScreen(),
+      // home: DashboardScreen(),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sewa_mitra/feature/agent/agents_form_page.dart';
 import 'about_us.dart';
 import 'history_page.dart';
 import 'home_page.dart';
@@ -18,7 +19,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final List<Widget> _pages = [
     const HomePage(),
      HistoryPage(),
-    const ProfilePage(),
+     AgentsFormPage(),
+    // const ProfilePage(),
     const AboutUsPage(),
   ];
 
@@ -43,7 +45,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Agent'),
           BottomNavigationBarItem(icon: Icon(Icons.info), label: 'About Us'),
         ],
       ),

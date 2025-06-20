@@ -1,57 +1,63 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../config/local_db/hive_data_source.dart';
+import 'auth_provider.dart';
 
-final hiveDataSourceProvider = Provider<HiveDataSource>((ref) {
-  return HiveDataSource();
-  // Reuse singleton instance
-});
-
-
+// State notifier for managing access token
 class AccessTokenNotifier extends StateNotifier<String> {
   final HiveDataSource _hiveDataSource;
 
   AccessTokenNotifier(this._hiveDataSource) : super('') {
-    initializeToken();
+    loadTokenFromStorage();
   }
 
-
-  Future<void> initializeToken() async {
+  // Load token from local storage on initialization
+  Future<void> loadTokenFromStorage() async {
     try {
       final token = await _hiveDataSource.getAccessToken();
-      state = token;
-      print('Initial Token: $state'); // Debug print
+      if (token != null && token.isNotEmpty) {
+        state = token;
+      }
     } catch (e) {
-      print('Error initializing token: $e'); // Error logging
-      state = '';
+      print('Error loading token from storage: $e');
     }
   }
 
-  Future<void> updateToken(String token) async {
+
+
+  // Set new token and persist to storage
+  Future<void> setToken(String token) async {
     try {
-      await _hiveDataSource.updateAccessToken(token);
       state = token;
-      print('Token updated: $state'); // Debug print
+      await _hiveDataSource.updateAccessToken(token);
     } catch (e) {
-      print('Error updating token: $e'); // Log error for debugging
-      state = ''; // Reset state on failure
-      rethrow; // Propagate error to caller (e.g., NetworkInterceptor)
+      print('Error storing token: $e');
     }
   }
 
+  // Clear token from memory and storage
   Future<void> clearToken() async {
     try {
-      await _hiveDataSource.clearAccessToken();
       state = '';
-      print('Token cleared'); // Debug print
+      await _hiveDataSource.clearAccessToken();
     } catch (e) {
-      print('Error clearing token: $e'); // Log error
-      state = ''; // Ensure state is cleared even on error
+      print('Error clearing token: $e');
     }
   }
+
+  // Check if token exists and is not empty
+  bool get hasToken => state.isNotEmpty;
+
+  // Get current token
+  String get token => state;
 }
 
-// Provide the instance of AccessTokenNotifier using dependency injection
-final accessTokenProvider = StateNotifierProvider<AccessTokenNotifier, String>((ref) {
-  return AccessTokenNotifier(ref.read(hiveDataSourceProvider));
-});
+// Provider for accessing token state
+final accessTokenProvider = StateNotifierProvider<AccessTokenNotifier, String>(
+      (ref) => AccessTokenNotifier(ref.read(hiveDataSourceProvider)),
+);
 
+// Convenience provider for checking if user is authenticated
+final isAuthenticatedProvider = Provider<bool>((ref) {
+  final token = ref.watch(accessTokenProvider);
+  return token.isNotEmpty;
+});

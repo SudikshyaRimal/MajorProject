@@ -5,15 +5,22 @@ import 'package:sewa_mitra/feature/auth/view/otp_verification_screen.dart';
 
 import '../../../core/cust_text_form_field.dart';
 import '../../../core/form_validators.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sewa_mitra/feature/auth/ctrl/otp_controller.dart';
+import 'package:sewa_mitra/feature/auth/view/otp_verification_screen.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
+import '../../../core/cust_text_form_field.dart';
+import '../../../core/form_validators.dart';
+
+class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  ConsumerState<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   bool _isLoading = false;
@@ -31,15 +38,29 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         _isLoading = true;
       });
 
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
+      final controller = OtpController(ref);
+      // Update controller's emailController with the email from ForgotPasswordScreen
+      controller.emailController.text = _emailController.text.trim();
 
-      setState(() {
-        _isLoading = false;
-        _emailSent = true;
-      });
-
-      Navigator.push(context, MaterialPageRoute(builder: (builder) => OtpVerificationScreen()));
+      try {
+        final success = await controller.handleOtp(context);
+        if (success) {
+          setState(() {
+            _emailSent = true;
+          });
+          // Navigate to OtpVerificationScreen instead of NewPasswordScreen
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const OtpVerificationScreen()),
+          );
+        }
+      } catch (e) {
+        // Error handling is already done in handleOtp, no need to show another SnackBar
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -48,20 +69,27 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       _isLoading = true;
     });
 
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 2));
+    final controller = OtpController(ref);
+    controller.emailController.text = _emailController.text.trim();
 
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Reset email sent again!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+    try {
+      final success = await controller.handleOtp(context);
+      if (success) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Reset email sent again!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Error handling is already done in handleOtp
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -139,7 +167,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   SizedBox(
                     height: 52,
                     child: ElevatedButton(
-                      onPressed: _isLoading ? null : _handleResetPassword,
+                      onPressed: _isLoading ? _handleResetPassword : _handleResetPassword,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue[600],
                         foregroundColor: Colors.white,
