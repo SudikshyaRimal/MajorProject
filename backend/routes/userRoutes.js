@@ -19,7 +19,7 @@ router.post('/logout', logout);
 router.post('/send-reset-otp', userAuth,sendResetOtp);
 router.post('/verify-reset-otp',userAuth, verifyResetOtp);
 router.post('/reset-password', userAuth,resetPassword);
-router.post('/edit-profile', userAuth,editProfile);
+router.put('/edit-profile', userAuth,editProfile);
 router.post('/changePassword', userAuth,changePassword);
 
 
