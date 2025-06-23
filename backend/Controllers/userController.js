@@ -47,8 +47,17 @@ export const registerUser = async (req, res) => {
     };
 
     await transporter.sendMail(mailOptions);
-
-    res.status(201).json({ success: true, message: "User registered successfully" });
+   
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully",
+      provider: {
+        id: user._id,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+      }
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -83,9 +92,8 @@ export const loginUser = async (req, res) => {
       sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-//token added in response
 
-    res.status(200).json({ success: true, message: "Login successful",token:token });
+    res.status(200).json({ success: true, message: "Login successful" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -208,8 +216,6 @@ export const resetPassword = async (req, res) => {
     return res.json({ success: false, message: error.message });
   }
 };
-
-
 // yo part profile ko ho last wala ko
 //update profile
 
