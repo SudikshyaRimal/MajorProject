@@ -1,4 +1,3 @@
-// models/Provider.js
 import mongoose from "mongoose";
 
 const providerSchema = new mongoose.Schema(
@@ -8,9 +7,14 @@ const providerSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     address: { type: String, required: true },
-    serviceType: { type: String, required: true },
 
-    // New Fields for service assignment
+    // Removed serviceType from required registration fields
+    serviceType: {
+      type: String,
+      required: false,
+    },
+
+    // These fields will be updated later after login
     subservice: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "SubService",
