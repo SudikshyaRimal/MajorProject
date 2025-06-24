@@ -5,9 +5,9 @@ import transporter from "../config/nodemailer.js";
 
 // User Registration
 export const registerUser = async (req, res) => {
-  const { firstname,lastname, email, password, address } = req.body;
+  const { firstname, lastname, email, password, address } = req.body;
 
-  if (!firstname||!lastname || !email || !password || !address) {
+  if (!firstname || !lastname || !email || !password || !address) {
     return res.status(400).json({ success: false, message: "Missing required fields" });
   }
 
@@ -32,13 +32,7 @@ export const registerUser = async (req, res) => {
       expiresIn: "7d",
     });
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-// welcome email
+    // Send welcome email
     const mailOptions = {
       from: process.env.SENDER_EMAIL,
       to: email,
@@ -48,14 +42,17 @@ export const registerUser = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
    
+    // FIXED: Return token in response body for Flutter
     res.status(201).json({
       success: true,
       message: "User registered successfully",
+      token: token, // Flutter can store this
       user: {
         id: user._id,
         firstname: user.firstname,
         lastname: user.lastname,
         email: user.email,
+        address: user.address
       }
     });
   } catch (error) {
@@ -86,14 +83,19 @@ export const loginUser = async (req, res) => {
       expiresIn: "7d",
     });
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+    // FIXED: Return token in response body for Flutter
+    res.status(200).json({ 
+      success: true, 
+      message: "Login successful",
+      token: token, // Flutter can store this
+      user: {
+        id: user._id,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+        address: user.address
+      }
     });
-
-    res.status(200).json({ success: true, message: "Login successful" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -102,18 +104,18 @@ export const loginUser = async (req, res) => {
 // User Logout
 export const logout = (req, res) => {
   try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    // For Flutter, logout is handled client-side by removing the token
+    // No server-side action needed since we're not using cookies
+    res.status(200).json({ 
+      success: true, 
+      message: "Logged out successfully. Please remove token from client storage." 
     });
-
-    res.status(200).json({ success: true, message: "Logged out successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-//resetotp
+
+// Reset OTP
 export const sendResetOtp = async (req, res) => {
   const { email } = req.body;
 
@@ -170,7 +172,7 @@ export const verifyResetOtp = async (req, res) => {
       return res.json({ success: false, message: 'OTP expired' });
     }
 
-    // Mark OTP as verified (you can also use a token or session-based ID for extra security)
+    // Mark OTP as verified
     user.resetOtpVerified = true;
     await user.save();
 
@@ -179,6 +181,7 @@ export const verifyResetOtp = async (req, res) => {
     return res.json({ success: false, message: error.message });
   }
 };
+
 export const resetPassword = async (req, res) => {
   const { email, newPassword, confirmPassword } = req.body;
 
@@ -216,9 +219,8 @@ export const resetPassword = async (req, res) => {
     return res.json({ success: false, message: error.message });
   }
 };
-// yo part profile ko ho last wala ko
-//update profile
 
+// Update profile
 export const editProfile = async (req, res) => {
   try {
     if (!req.user || !req.user._id) {
@@ -250,9 +252,7 @@ export const editProfile = async (req, res) => {
   }
 };
 
-// change password
-
-
+// Change password
 export const changePassword = async (req, res) => {
   try {
     if (!req.user || !req.user._id) {
