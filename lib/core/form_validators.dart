@@ -1,4 +1,13 @@
 class FormValidators {
+static String? validateOptionalLink(String? value, {String? fieldName}) {
+  if (value == null || value.trim().isEmpty) return null;
+  final pattern = r'^(https?:\/\/)?[\w\-]+(\.[\w\-]+)+[/#?]?.*$';
+  final regex = RegExp(pattern);
+  if (!regex.hasMatch(value.trim())) {
+    return '$fieldName must be a valid URL';
+  }
+  return null;
+}
 
   static String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {

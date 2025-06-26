@@ -25,6 +25,18 @@ class HiveSetup {
       rethrow;
     }
   }
+Future<void> saveToken(String token) async {
+  final box = await Hive.openLazyBox(HIVE_TOKEN_BOX);
+  await box.put('token', token);
+}
+Future<String?> getToken() async {
+  final box = await Hive.openLazyBox(HIVE_TOKEN_BOX);
+  return await box.get('token');
+}
 
+Future<void> clearToken() async {
+  final box = await Hive.openLazyBox(HIVE_TOKEN_BOX);
+  await box.delete('token');
+}
 
 }

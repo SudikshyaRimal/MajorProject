@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:sewamitraapp/config/local_db/hive_keys.dart';
 import 'package:sewamitraapp/feature/auth/model/otp_response_model.dart';
 import 'package:sewamitraapp/feature/auth/model/success_model.dart';
 
@@ -14,6 +16,10 @@ class AuthServices {
 
   // Constructor initializes the HTTP service via provider
   AuthServices(this._httpService);
+Future<void> saveToken(String token) async {
+  final box = await Hive.openLazyBox(HIVE_TOKEN_BOX);
+  await box.put('token', token);
+}
 
   // Sends login request to the server with provided credentials
   Future<SuccessModel> postLoginCred({required Map<String, dynamic> data}) async {
@@ -23,8 +29,11 @@ class AuthServices {
       // Handle failure case by throwing the failure
           (failure) => throw failure,
       // Handle success case by parsing response
-          (response) {
+          (response)async {
         if (response.statusCode == 200 || response.statusCode == 201) {
+          print('login response: ${response.data}');
+          await saveToken(response.data['token']); // adjust based on your response model
+
           // Parse and return success response
           return SuccessModel.fromJson(response.data);
         }
@@ -36,8 +45,11 @@ class AuthServices {
 
   // Sends registration request to the server with provided data
   Future<SuccessModel> postRegister({required Map<String, dynamic> data}) async {
+    print('data: $data');
+    // Validate required fields
     // Make POST request to registration endpoint
     final result = await _httpService.post(ApiEndPoints.userRegistration, data: data);
+    print('result: $result');
     return result.fold(
       // Handle failure case by throwing the failure
           (failure) => throw failure,

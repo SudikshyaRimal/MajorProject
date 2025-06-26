@@ -108,7 +108,37 @@ class RegistrationScreen extends ConsumerWidget {
                     maxLines: 2,
                     textCapitalization: TextCapitalization.words,
                   ),
+CustomTextFormField(
+  hintText: 'Phone Number',
+  prefixIcon: Icons.phone,
+  controller: controller.phoneController,
+  validator: (value) => FormValidators.validateRequired(value, fieldName: 'Phone'),
+  keyboardType: TextInputType.phone,
+),
 
+CustomTextFormField(
+  hintText: 'Twitter Link',
+  prefixIcon: Icons.link,
+  controller: controller.twitterController,
+  validator: (value) => FormValidators.validateOptionalLink(value, fieldName: 'Twitter'),
+  keyboardType: TextInputType.url,
+),
+
+CustomTextFormField(
+  hintText: 'LinkedIn Link',
+  prefixIcon: Icons.link,
+  controller: controller.linkedinController,
+  validator: (value) => FormValidators.validateOptionalLink(value, fieldName: 'LinkedIn'),
+  keyboardType: TextInputType.url,
+),
+
+CustomTextFormField(
+  hintText: 'GitHub Link',
+  prefixIcon: Icons.link,
+  controller: controller.githubController,
+  validator: (value) => FormValidators.validateOptionalLink(value, fieldName: 'GitHub'),
+  keyboardType: TextInputType.url,
+),
                   const SizedBox(height: 32),
 
                   // Registration Type Selection

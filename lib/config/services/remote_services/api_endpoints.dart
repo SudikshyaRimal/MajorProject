@@ -16,6 +16,8 @@ class ApiEndPoints {
 //user endpoints
   static String getAllCategory='category/all';
   static String getWorkers='provider/getWorkers';
+    static String getProfile='user/profile';
+
 
 
 }

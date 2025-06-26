@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sewamitraapp/feature/auth/view/login_screen.dart';
 
 import '../../../config/services/remote_services/errors/failure.dart';
 import '../../dashboard/dashboard.dart';
@@ -16,6 +17,10 @@ class RegisterController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final addressController = TextEditingController();
+final phoneController = TextEditingController();
+final twitterController = TextEditingController();
+final linkedinController = TextEditingController();
+final githubController = TextEditingController();
 
   // Riverpod Ref for accessing providers
   final WidgetRef ref;
@@ -42,7 +47,11 @@ class RegisterController {
       'lastname' :lastNameController.text.trim(),
       'email': emailController.text.trim(),
       'password': passwordController.text.trim(),
-      'address': addressController.text.trim()
+      'address': addressController.text.trim(),
+      'phone': phoneController.text.trim(),
+  'twitter': twitterController.text.trim(),
+  'linkedin': linkedinController.text.trim(),
+  'github': githubController.text.trim(),
     };
 
     try {
@@ -58,7 +67,7 @@ class RegisterController {
       );
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const DashboardScreen()),
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
       );
 
     } catch (e) {

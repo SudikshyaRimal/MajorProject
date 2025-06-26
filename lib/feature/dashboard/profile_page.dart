@@ -1,16 +1,33 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'package:sewamitraapp/config/local_db/hive_keys.dart';
+import 'package:sewamitraapp/config/services/remote_services/api_endpoints.dart';
+import 'package:sewamitraapp/feature/auth/view/login_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
-  final String name = 'John Doe';
-  final String email = 'john.doe@example.com';
-  final String phone = '+977-987-654-3210';
-  final String twitter = 'https://x.com/johndoe';
-  final String linkedin = 'https://linkedin.com/in/johndoe';
-  final String github = 'https://github.com/johndoe';
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
 
+class _ProfilePageState extends State<ProfilePage> {
+   String name = 'John Doe';
+
+   String email = 'john.doe@example.com';
+
+   String phone = '+977-987-654-3210';
+
+   String twitter = 'https://x.com/johndoe';
+
+   String linkedin = 'https://linkedin.com/in/johndoe';
+
+   String github = 'https://github.com/johndoe';
+bool isLoading = true;
   Future<void> _launchUrl(BuildContext context, String url) async {
     final Uri uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
@@ -26,7 +43,26 @@ class ProfilePage extends StatelessWidget {
       );
     }
   }
-
+  
+ Future<void> _loadProfile() async {
+    final data = await fetchUserProfile();
+    if (data != null) {
+      setState(() {
+        name = '${data['firstname']} ${data['lastname']}' ?? '';
+        email = data['email'] ?? '';
+        phone = data['phone'] ?? '';
+        twitter = data['twitter'] ?? '';
+        linkedin = data['linkedin'] ?? '';
+        github = data['github'] ?? '';
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      // Optionally show error
+    }
+  }
   Widget _buildSectionHeader(String title) {
     return Padding(
       padding: const EdgeInsets.only(left: 8, top: 16, bottom: 8),
@@ -73,8 +109,41 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
+Future<Map<String, dynamic>?> fetchUserProfile() async {
+  final box = await Hive.openLazyBox(HIVE_TOKEN_BOX);
+  final token = await box.get('token');
+
+  if (token == null) return null;
+
+  final response = await http.get(
+    Uri.parse('${ApiEndPoints.baseUrl}${ApiEndPoints.getProfile}'),
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    },
+  );
+    print('fetchUserProfile response: ${response.body}');
+
+  if (response.statusCode == 200) {
+    print('fetchUserProfile response: ${response.body}');
+    return json.decode(response.body) as Map<String, dynamic>;
+  } else {
+    return null; // Or handle errors
+  }
+}
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
   @override
   Widget build(BuildContext context) {
+
+     if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
@@ -159,7 +228,12 @@ class ProfilePage extends StatelessWidget {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: ()async {
+                 await logout();
+                  Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: const Text('Logged out successfully'),
@@ -192,4 +266,15 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
+
+  Future<void> clearToken() async {
+  final box = await Hive.openLazyBox(HIVE_TOKEN_BOX);
+  await box.delete('token');
+}
+
+Future<void> logout() async {
+  await clearToken();
+  
+  // Any other logout cleanup like resetting app state, navigating to login screen
+}
 }
