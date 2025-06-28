@@ -2,7 +2,7 @@
 class ApiEndPoints {
 
 
-  static String baseUrl = 'http://192.168.1.86:4000/api/';
+  static String baseUrl = 'http://192.168.0.104:4000/api/';
   
   
   //'https://majorproject-khhl.onrender.com/api/';
@@ -16,7 +16,7 @@ class ApiEndPoints {
 //user endpoints
   static String getAllCategory='category/all';
   static String getWorkers='provider/getWorkers';
-    static String getProfile='user/profile';
+  static String getProfile='user/profile';
 
 
 

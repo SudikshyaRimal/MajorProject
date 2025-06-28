@@ -116,15 +116,15 @@ CustomTextFormField(
   keyboardType: TextInputType.phone,
 ),
 
-CustomTextFormField(
+/*CustomTextFormField(
   hintText: 'Twitter Link',
   prefixIcon: Icons.link,
   controller: controller.twitterController,
   validator: (value) => FormValidators.validateOptionalLink(value, fieldName: 'Twitter'),
   keyboardType: TextInputType.url,
-),
+),*/
 
-CustomTextFormField(
+/*CustomTextFormField(
   hintText: 'LinkedIn Link',
   prefixIcon: Icons.link,
   controller: controller.linkedinController,
@@ -138,7 +138,7 @@ CustomTextFormField(
   controller: controller.githubController,
   validator: (value) => FormValidators.validateOptionalLink(value, fieldName: 'GitHub'),
   keyboardType: TextInputType.url,
-),
+),*/
                   const SizedBox(height: 32),
 
                   // Registration Type Selection
