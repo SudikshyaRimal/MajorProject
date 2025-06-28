@@ -38,8 +38,8 @@ class HttpServiceImpl implements HttpService {
   // Base options for Dio configuration
   BaseOptions get baseOptions => BaseOptions(
     baseUrl: baseUrl,
-    connectTimeout: const Duration(seconds: 30),
-    receiveTimeout: const Duration(seconds: 8),
+    connectTimeout: const Duration(seconds: 40),
+    receiveTimeout: const Duration(seconds: 10),
   );
 
   // Creates Dio options with headers and authentication settings

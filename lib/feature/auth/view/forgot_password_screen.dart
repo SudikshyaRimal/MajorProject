@@ -203,9 +203,12 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
+
                         ),
                       ),
+
                     ),
+
                   ),
                 ] else ...[
                   // Success State
@@ -302,7 +305,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                     GestureDetector(
-                      onTap: () => Navigator.pop(context),
+                      onTap: () => Navigator.new,
                       child: Text(
                         'Sign In',
                         style: TextStyle(

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sewa_mitra/config/local_db/hive_setup.dart';
+import 'package:sewa_mitra/feature/auth/view/forgot_password_screen.dart';
 import 'package:sewa_mitra/feature/auth/view/login_screen.dart';
+import 'package:sewa_mitra/feature/auth/view/new_password_screen.dart';
+import 'package:sewa_mitra/feature/auth/view/register_screen.dart';
 import 'package:sewa_mitra/feature/dashboard/dashboard.dart';
 
 import 'feature/auth/services/app_initializer_screen.dart';
@@ -29,7 +32,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // home: LoginScreen(),
-      home: AppInitializerScreen(),
+      home: DashboardScreen(),
       // home: DashboardScreen(),
       // home: DashboardScreen(),
     );

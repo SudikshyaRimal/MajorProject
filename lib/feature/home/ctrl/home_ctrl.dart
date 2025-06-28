@@ -2,40 +2,43 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sewa_mitra/feature/home/model/category.dart';
 import 'package:sewa_mitra/feature/home/model/provider_model.dart';
 import 'package:sewa_mitra/feature/home/services/home_services.dart';
-
 // State class to hold the home page data
 class HomeState {
   final List<Category> categories;
   final List<ProviderModel> providers;
   final String selectedCategory;
-  final String searchQuery;
-  final bool isLoading;
-  final String? error;
+  final bool isLoadingCategories;
+  final bool isLoadingProviders;
+  final String? categoryError;
+  final String? providerError;
 
   HomeState({
     this.categories = const [],
     this.providers = const [],
     this.selectedCategory = 'All',
-    this.searchQuery = '',
-    this.isLoading = false,
-    this.error,
+    this.isLoadingCategories = false,
+    this.isLoadingProviders = false,
+    this.categoryError,
+    this.providerError,
   });
 
   HomeState copyWith({
     List<Category>? categories,
     List<ProviderModel>? providers,
     String? selectedCategory,
-    String? searchQuery,
-    bool? isLoading,
-    String? error,
+    bool? isLoadingCategories,
+    bool? isLoadingProviders,
+    String? categoryError,
+    String? providerError,
   }) {
     return HomeState(
       categories: categories ?? this.categories,
       providers: providers ?? this.providers,
       selectedCategory: selectedCategory ?? this.selectedCategory,
-      searchQuery: searchQuery ?? this.searchQuery,
-      isLoading: isLoading ?? this.isLoading,
-      error: error,
+      isLoadingCategories: isLoadingCategories ?? this.isLoadingCategories,
+      isLoadingProviders: isLoadingProviders ?? this.isLoadingProviders,
+      categoryError: categoryError ?? this.categoryError,
+      providerError: providerError ?? this.providerError,
     );
   }
 }
@@ -50,32 +53,40 @@ class HomeController extends StateNotifier<HomeState> {
 
   // Fetch all categories
   Future<void> fetchCategories() async {
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(isLoadingCategories: true, categoryError: null);
     try {
       final category = await _homeServices.getAllCategories();
       state = state.copyWith(
-        categories: [Category(id: 'all', name: 'All', createdAt: DateTime.now(), updatedAt: DateTime.now()), ...[category]],
-        isLoading: false,
+        categories: [Category(id: 'all', name: 'All', createdAt: DateTime.now(), updatedAt: DateTime.now(), v: 0), ...[category]],
+        isLoadingCategories: false,
       );
       // Fetch providers for the default category
       await fetchProviders(state.selectedCategory);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoadingCategories: false, categoryError: 'Failed to load categories');
     }
   }
 
   // Fetch providers by category
   Future<void> fetchProviders(String category) async {
     if (category == 'All') {
-      state = state.copyWith(providers: [], isLoading: false);
+      state = state.copyWith(providers: [], isLoadingProviders: false, providerError: 'No agents available');
       return;
     }
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(isLoadingProviders: true, providerError: null);
     try {
       final provider = await _homeServices.getAgentsByCategories(category: category);
-      state = state.copyWith(providers: [provider], isLoading: false);
+      state = state.copyWith(
+        providers: provider != null ? [provider] : [],
+        isLoadingProviders: false,
+        providerError: provider == null ? 'No agents available' : null,
+      );
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(
+        providers: [],
+        isLoadingProviders: false,
+        providerError: 'No agents available',
+      );
     }
   }
 
@@ -83,11 +94,6 @@ class HomeController extends StateNotifier<HomeState> {
   void setSelectedCategory(String category) {
     state = state.copyWith(selectedCategory: category);
     fetchProviders(category);
-  }
-
-  // Update search query
-  void setSearchQuery(String query) {
-    state = state.copyWith(searchQuery: query);
   }
 }
 

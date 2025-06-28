@@ -47,6 +47,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Agent'),
           BottomNavigationBarItem(icon: Icon(Icons.info), label: 'About Us'),
+
         ],
       ),
     );
