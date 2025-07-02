@@ -1,15 +1,16 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sewamitraapp/config/services/remote_services/api_endpoints.dart';
 import 'package:sewamitraapp/feature/booking/booking_confirmation_page.dart';
+import '../../core/const/app_strings.dart';
 import '../dashboard/history_page.dart';
 import '../home/model/service.dart';
+import 'model/sub_category.dart';
 
 
 class BookNowPage extends StatefulWidget {
-  final Service? initialService; // Optional pre-selected service
+  final Service? initialService;
 
   const BookNowPage({super.key, this.initialService});
 
@@ -18,97 +19,10 @@ class BookNowPage extends StatefulWidget {
 }
 
 class _BookNowPageState extends State<BookNowPage> {
-  // Sample service list (in a real app, fetch from a data source)
-
-
-  Future<bool> createBooking({
-  required String token,
-  required String fullname,
-  required String providerId,
-  required String date,     // e.g., '2024-09-10'
-  required String time,     // e.g., '14:00'
-  required String location,
-}) async {
-  print('inside create booking');
-  final url = Uri.parse('${ApiEndPoints.baseUrl}booking/book'); // Replace with your actual endpoint
-String token ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NTUwMGViMjgyOWFmN2FjZTI3YjdkNSIsImlhdCI6MTc1MDQxNTY0NCwiZXhwIjoxNzUxMDIwNDQ0fQ.wziSP2L3ls8ZZ_aw2Ir49E151fzT0DwxZZA6C4iMCwo';
-  final body = {
-    "fullname": fullname,
-    "providerId": providerId,
-    "date": date,
-    "time": time,
-    "location": location,
-  };
-
-  final headers = {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer $token',
-  };
-
-  try {
-    final response = await http.post(
-      url,
-      headers: headers,
-      body: json.encode(body),
-    );
-print('booking res${response.body}');
-    if (response.statusCode == 201) {
-      final responseData = json.decode(response.body);
-      print('Booking successful: ${responseData['booking']['_id']}');
-      return true;
-    } else {
-      print('Booking failed: ${response.body}');
-      return false;
-    }
-  } catch (e) {
-    print('Error creating booking: $e');
-    return false;
-  }
-}
-  final List<Service> _services = [
-    Service(
-      id: '1',
-      name: 'Professional Plumbing',
-      category: 'Plumbing',
-      rating: 4.8,
-      price: 'Rs. 500/hour',
-      image: Icons.plumbing,
-      description: 'Expert plumbing services for all your needs',
-      isAvailable: true,
-    ),
-    Service(
-      id: '2',
-      name: 'Electrical Repair',
-      category: 'Electrical',
-      rating: 4.6,
-      price: 'Rs. 600/hour',
-      image: Icons.electrical_services,
-      description: 'Licensed electricians for safe repairs',
-      isAvailable: true,
-    ),
-    Service(
-      id: '3',
-      name: 'AC Maintenance',
-      category: 'HVAC',
-      rating: 4.7,
-      price: 'Rs. 800/visit',
-      image: Icons.ac_unit,
-      description: 'Complete AC servicing and repairs',
-      isAvailable: false,
-    ),
-    Service(
-      id: '4',
-      name: 'House Cleaning',
-      category: 'Cleaning',
-      rating: 4.9,
-      price: 'Rs. 1200/day',
-      image: Icons.cleaning_services,
-      description: 'Professional house cleaning services',
-      isAvailable: true,
-    ),
-  ];
+  // Sample service list with sub-categories
 
   Service? _selectedService;
+  SubCategory? _selectedSubCategory;
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   final TextEditingController _notesController = TextEditingController();
@@ -116,13 +30,60 @@ print('booking res${response.body}');
   @override
   void initState() {
     super.initState();
-    _selectedService = widget.initialService; // Pre-select service if provided
+    _selectedService = widget.initialService;
   }
 
   @override
   void dispose() {
     _notesController.dispose();
     super.dispose();
+  }
+
+  Future<bool> createBooking({
+    required String token,
+    required String fullname,
+    required String providerId,
+    required String date,
+    required String time,
+    required String location,
+    String? subCategoryName,
+  }) async {
+    print('inside create booking');
+    final url = Uri.parse('${ApiEndPoints.baseUrl}booking/book');
+    String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NTUwMGViMjgyOWFmN2FjZTI3YjdkNSIsImlhdCI6MTc1MDQxNTY0NCwiZXhwIjoxNzUxMDIwNDQ0fQ.wziSP2L3ls8ZZ_aw2Ir49E151fzT0DwxZZA6C4iMCwo';
+    final body = {
+      "fullname": fullname,
+      "providerId": providerId,
+      "date": date,
+      "time": time,
+      "location": location,
+      if (subCategoryName != null) "subCategory": subCategoryName,
+    };
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: json.encode(body),
+      );
+      print('booking res${response.body}');
+      if (response.statusCode == 201) {
+        final responseData = json.decode(response.body);
+        print('Booking successful: ${responseData['booking']['_id']}');
+        return true;
+      } else {
+        print('Booking failed: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error creating booking: $e');
+      return false;
+    }
   }
 
   Future<void> _pickDate(BuildContext context) async {
@@ -152,12 +113,10 @@ print('booking res${response.body}');
   }
 
   void _confirmBooking() {
-    createBooking(token: 'token', fullname: _selectedService!.name, providerId: '68551f5e823307363b2a19e2', date: _selectedDate.toString(), time: _selectedTime.toString(), location: 'Kathmandu');
-
-    if (_selectedService == null || _selectedDate == null || _selectedTime == null) {
-
-createBooking(token: 'token', fullname: '_selectedService!.name', providerId: '68551f5e823307363b2a19e2', date: _selectedDate.toString(), time: _selectedTime.toString(), location: 'location');
-
+    if (_selectedService == null ||
+        _selectedSubCategory == null ||
+        _selectedDate == null ||
+        _selectedTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please fill in all required fields'),
@@ -167,7 +126,16 @@ createBooking(token: 'token', fullname: '_selectedService!.name', providerId: '6
       return;
     }
 
-    // Create a Booking object
+    createBooking(
+      token: 'token',
+      fullname: _selectedService!.name,
+      providerId: '68551f5e823307363b2a19e2',
+      date: _selectedDate.toString(),
+      time: _selectedTime.toString(),
+      location: 'Kathmandu',
+      subCategoryName: _selectedSubCategory!.name,
+    );
+
     final booking = Booking(
       id: 'b${DateTime.now().millisecondsSinceEpoch}',
       service: _selectedService!,
@@ -179,10 +147,9 @@ createBooking(token: 'token', fullname: '_selectedService!.name', providerId: '6
         _selectedTime!.minute,
       ),
       status: 'Upcoming',
-      totalPrice: _selectedService!.price,
+      totalPrice: _selectedSubCategory!.price,
     );
 
-    // Navigate to BookingConfirmationPage
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -209,7 +176,6 @@ createBooking(token: 'token', fullname: '_selectedService!.name', providerId: '6
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Service Selection
             const Text(
               'Select Service',
               style: TextStyle(
@@ -229,7 +195,7 @@ createBooking(token: 'token', fullname: '_selectedService!.name', providerId: '6
                 ),
                 prefixIcon: Icon(Icons.build, color: Colors.blue[600]),
               ),
-              items: _services
+              items: services
                   .where((service) => service.isAvailable)
                   .map((service) => DropdownMenuItem<Service>(
                 value: service,
@@ -239,11 +205,49 @@ createBooking(token: 'token', fullname: '_selectedService!.name', providerId: '6
               onChanged: (Service? newValue) {
                 setState(() {
                   _selectedService = newValue;
+                  _selectedSubCategory = null;
                 });
               },
             ),
+            const SizedBox(height: 12),
+            if (_selectedService != null && _selectedService!.subCategories.isNotEmpty)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Select Sub-Category',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<SubCategory>(
+                    value: _selectedSubCategory,
+                    decoration: InputDecoration(
+                      labelText: 'Sub-Category',
+                      labelStyle: TextStyle(color: Colors.grey[600]),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      prefixIcon: Icon(Icons.category, color: Colors.blue[600]),
+                    ),
+                    items: _selectedService!.subCategories
+                        .map((subCategory) => DropdownMenuItem<SubCategory>(
+                      value: subCategory,
+                      child: Text(subCategory.name),
+                    ))
+                        .toList(),
+                    onChanged: (SubCategory? newValue) {
+                      setState(() {
+                        _selectedSubCategory = newValue;
+                      });
+                    },
+                  ),
+                ],
+              ),
             const SizedBox(height: 16),
-            // Date Selection
             const Text(
               'Select Date',
               style: TextStyle(
@@ -279,7 +283,6 @@ createBooking(token: 'token', fullname: '_selectedService!.name', providerId: '6
               ),
             ),
             const SizedBox(height: 16),
-            // Time Selection
             const Text(
               'Select Time',
               style: TextStyle(
@@ -315,7 +318,6 @@ createBooking(token: 'token', fullname: '_selectedService!.name', providerId: '6
               ),
             ),
             const SizedBox(height: 16),
-            // Additional Notes
             const Text(
               'Additional Notes',
               style: TextStyle(
@@ -338,8 +340,7 @@ createBooking(token: 'token', fullname: '_selectedService!.name', providerId: '6
               maxLines: 3,
             ),
             const SizedBox(height: 24),
-            // Booking Summary
-            if (_selectedService != null)
+            if (_selectedService != null && _selectedSubCategory != null)
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -383,11 +384,25 @@ createBooking(token: 'token', fullname: '_selectedService!.name', providerId: '6
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
+                          'Sub-Category:',
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                        Text(
+                          _selectedSubCategory!.name,
+                          style: const TextStyle(fontSize: 14, color: Colors.black87),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
                           'Price:',
                           style: TextStyle(fontSize: 14, color: Colors.grey),
                         ),
                         Text(
-                          _selectedService!.price,
+                          _selectedSubCategory!.price,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -400,7 +415,6 @@ createBooking(token: 'token', fullname: '_selectedService!.name', providerId: '6
                 ),
               ),
             const SizedBox(height: 24),
-            // Confirm Button
             SizedBox(
               width: double.infinity,
               height: 48,

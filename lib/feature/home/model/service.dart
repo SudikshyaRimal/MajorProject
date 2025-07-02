@@ -1,7 +1,7 @@
-
-// Service Model
 import 'package:flutter/material.dart';
+import '../../booking/model/sub_category.dart';
 
+// Service model
 class Service {
   final String id;
   final String name;
@@ -11,6 +11,7 @@ class Service {
   final IconData image;
   final String description;
   final bool isAvailable;
+  final List<SubCategory> subCategories;
 
   Service({
     required this.id,
@@ -21,5 +22,6 @@ class Service {
     required this.image,
     required this.description,
     required this.isAvailable,
+    required this.subCategories,
   });
 }

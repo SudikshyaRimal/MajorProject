@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:sewamitraapp/feature/home/model/provider_model.dart';
 
-//import '../model/service.dart';
+//import '../model/booking_service.dart';
 
 class ServiceCard extends StatelessWidget {
   final ProviderModel service;

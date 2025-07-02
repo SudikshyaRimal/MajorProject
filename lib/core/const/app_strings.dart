@@ -3,8 +3,8 @@
 // Sample service data - replace with your actual data source
 import 'package:flutter/material.dart';
 
+import '../../feature/booking/model/sub_category.dart';
 import '../../feature/home/model/service.dart';
-
 final List<Service> services = [
   Service(
     id: '1',
@@ -15,16 +15,44 @@ final List<Service> services = [
     image: Icons.plumbing,
     description: 'Expert plumbing services for all your needs',
     isAvailable: true,
+    subCategories: [
+      SubCategory(
+        id: '1a',
+        name: 'Pipe Repair',
+        price: 'Rs. 600/hour',
+        description: 'Fixing leaks and broken pipes',
+      ),
+      SubCategory(
+        id: '1b',
+        name: 'Drain Cleaning',
+        price: 'Rs. 550/hour',
+        description: 'Clearing clogged drains',
+      ),
+    ],
   ),
   Service(
     id: '2',
-    name: 'Electrical Repair',
-    category: 'Electrical',
+    name: 'Painter',
+    category: 'Painter',
     rating: 4.6,
     price: 'Rs. 600/hour',
     image: Icons.electrical_services,
-    description: 'Licensed electricians for safe repairs',
+    description: 'Licensed painters',
     isAvailable: true,
+    subCategories: [
+      SubCategory(
+        id: '2a',
+        name: 'Interior Painting',
+        price: 'Rs. 650/hour',
+        description: 'Painting interior walls',
+      ),
+      SubCategory(
+        id: '2b',
+        name: 'Exterior Painting',
+        price: 'Rs. 700/hour',
+        description: 'Painting exterior surfaces',
+      ),
+    ],
   ),
   Service(
     id: '3',
@@ -35,6 +63,7 @@ final List<Service> services = [
     image: Icons.ac_unit,
     description: 'Complete AC servicing and repairs',
     isAvailable: false,
+    subCategories: [],
   ),
   Service(
     id: '4',
@@ -45,28 +74,23 @@ final List<Service> services = [
     image: Icons.cleaning_services,
     description: 'Professional house cleaning services',
     isAvailable: true,
-  ),
-  Service(
-    id: '5',
-    name: 'Appliance Repair',
-    category: 'Repair',
-    rating: 4.5,
-    price: 'Rs. 400/hour',
-    image: Icons.build,
-    description: 'Fix all your home appliances',
-    isAvailable: true,
-  ),
-  Service(
-    id: '6',
-    name: 'Gardening Service',
-    category: 'Gardening',
-    rating: 4.4,
-    price: 'Rs. 300/hour',
-    image: Icons.grass,
-    description: 'Maintain your garden beautifully',
-    isAvailable: true,
+    subCategories: [
+      SubCategory(
+        id: '4a',
+        name: 'Deep Cleaning',
+        price: 'Rs. 1500/day',
+        description: 'Thorough cleaning of entire house',
+      ),
+      SubCategory(
+        id: '4b',
+        name: 'Regular Cleaning',
+        price: 'Rs. 1200/day',
+        description: 'Standard cleaning services',
+      ),
+    ],
   ),
 ];
+
 
 final List<String> categories = [
   'All',

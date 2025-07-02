@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sewamitraapp/feature/booking/booking_history_page.dart';
 import 'about_us.dart';
 import 'history_page.dart';
 import 'home_page.dart';
@@ -17,7 +18,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // List of pages corresponding to each navigation item
   final List<Widget> _pages = [
     const HomePage(),
-     HistoryPage(),
+    BookingHistoryPage(),
     const ProfilePage(),
     const AboutUsPage(),
   ];
@@ -42,7 +43,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         showUnselectedLabels: true,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
+          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Bookings'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
           BottomNavigationBarItem(icon: Icon(Icons.info), label: 'About Us'),
         ],
