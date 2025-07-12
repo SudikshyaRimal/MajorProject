@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sewa_mitra/feature/agent/agents_form_page.dart';
-import 'package:sewa_mitra/feature/service_provider/profile_creation_page.dart';
+import '../service_provider/service_provider_form.dart';
 import 'about_us.dart';
 import 'history_page.dart';
 import 'home_page.dart';
@@ -18,11 +17,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // List of pages corresponding to each navigation item
   final List<Widget> _pages = [
+        // ServiceProviderDashboard(),
+
     const HomePage(),
      HistoryPage(),
-    ProfileCreationPage(),
+        // JobHistoryPage(jobs: upcomingJobs),
+        //       ProfileCreationPage(),
      // AgentsFormPage(),
-    // const ProfilePage(),
+    const ProfilePage(),
+    ServiceProviderForm(),
+
     const AboutUsPage(),
   ];
 
@@ -47,7 +51,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Agent'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.home_repair_service), label: 'Agent'),
           BottomNavigationBarItem(icon: Icon(Icons.info), label: 'About Us'),
 
         ],

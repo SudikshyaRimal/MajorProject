@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
       ),
       // home: LoginScreen(),
       home: DashboardScreen(),
+      // home: RegistrationScreen(),
       // home: DashboardScreen(),
       // home: DashboardScreen(),
     );
