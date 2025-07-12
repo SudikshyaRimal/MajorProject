@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sewa_mitra/feature/agent/agents_form_page.dart';
+import 'package:sewa_mitra/feature/service_provider/profile_creation_page.dart';
 import 'about_us.dart';
 import 'history_page.dart';
 import 'home_page.dart';
@@ -19,7 +20,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final List<Widget> _pages = [
     const HomePage(),
      HistoryPage(),
-     AgentsFormPage(),
+    ProfileCreationPage(),
+     // AgentsFormPage(),
     // const ProfilePage(),
     const AboutUsPage(),
   ];
