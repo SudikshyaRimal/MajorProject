@@ -19,6 +19,7 @@ class _ServiceProviderFormState extends State<ServiceProviderForm> {
   final Map<String, List<String>> _subCategories = {
     'Cleaning': [
       'House Cleaning',
+      'Sofa Cleaning',
       'Office Cleaning',
       'Carpet Cleaning',
       'Window Cleaning',
@@ -36,10 +37,15 @@ class _ServiceProviderFormState extends State<ServiceProviderForm> {
     'Plumbing': [
       'Pipe Repair',
       'Drain Cleaning',
-      'Fixture Installation',
-      'Water Heater Installation',
+      'Solar Fitting ',
+      'Shower Fitting'
+      'Water Tank Installation',
       'Leak Detection',
-      'Sewer Line Repair',
+      'Washing Machine Installation',
+      'Water Meter Installation',
+      'Bathtub Fitting',
+      'Water Filter Installation'
+      ,
     ],
   };
 
@@ -329,21 +335,21 @@ class _ServiceProviderFormState extends State<ServiceProviderForm> {
                     SizedBox(height: 24.0),
 
                     // Citizenship Photo
-                    ImagePickerWidget(
-                      title: 'Citizenship Photo',
-                      subtitle: 'Upload a clear photo of your citizenship document',
-                      onImageSelected: (File? image) {
-                        setState(() {
-                          _citizenshipPhoto = image;
-                        });
-                      },
-                      initialImage: _citizenshipPhoto,
-                    ),
-                    SizedBox(height: 24.0),
+                    // ImagePickerWidget(
+                    //   title: 'Citizenship Photo',
+                    //   subtitle: 'Upload a clear photo of your citizenship document',
+                    //   onImageSelected: (File? image) {
+                    //     setState(() {
+                    //       _citizenshipPhoto = image;
+                    //     });
+                    //   },
+                    //   initialImage: _citizenshipPhoto,
+                    // ),
+                    // SizedBox(height: 24.0),
 
                     // Certificate Photo
                     ImagePickerWidget(
-                      title: 'Certificate Photo',
+                      title: 'Certificate/Citizenship Document',
                       subtitle: 'Upload a photo of your relevant certificates or qualifications',
                       onImageSelected: (File? image) {
                         setState(() {
@@ -383,7 +389,7 @@ class _ServiceProviderFormState extends State<ServiceProviderForm> {
                         'subCategories': _selectedSubCategories,
                         'experience': _experience,
                         'citizenship': _citizenship,
-                        'citizenshipPhoto': _citizenshipPhoto?.path,
+                       // 'citizenshipPhoto': _citizenshipPhoto?.path,
                         'certificatePhoto': _certificatePhoto?.path,
                       });
 
