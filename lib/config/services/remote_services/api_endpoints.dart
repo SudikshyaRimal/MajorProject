@@ -13,6 +13,7 @@ class ApiEndPoints {
    //user endpoints
   static String getAllCategory='category/all';
   static String getWorkers='provider/getWorkers';
-
-
+ // chatbot endpoints
+ static String chatbaseUrl = 'http://localhost:8000/api/v1/chat';
+ 
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
-  runApp(ChatBotApp());
+ runApp(ChatBotApp());
 }
 
 class ChatBotApp extends StatelessWidget {
@@ -9,7 +11,7 @@ class ChatBotApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: ChatBotScreen(),
-      debugShowCheckedModeBanner: false,
+     debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -21,7 +23,7 @@ class ChatBotScreen extends StatefulWidget {
 
 class _ChatBotScreenState extends State<ChatBotScreen> {
   List<Map<String, dynamic>> messages = [
-    {"text": "Hi, I’m Sendbird Bot!\nHow can I help you today? 😊", "isBot": true}
+    {"text": "Hi, I’m Sewamitra Bot!\nHow can I help you today? 😊", "isBot": true}
   ];
 
   final TextEditingController _controller = TextEditingController();
@@ -40,24 +42,53 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
     });
   }
 
-  void sendMessage() {
+  Future <void> sendMessage() async {
     String userInput = _controller.text.trim();
     if (userInput.isEmpty) return;
 
     setState(() {
       messages.add({"text": userInput, "isBot": false});
       _controller.clear();
+    });
 
-      // Dummy bot response after delay
-      Future.delayed(Duration(milliseconds: 700), () {
+        try {
+      // Make API call to your FastAPI endpoint
+      final response = await http.post(
+        Uri.parse('http://localhost:8000/api/v1/chat'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'query': userInput,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
         setState(() {
           messages.add({
-            "text": "You said: \"$userInput\"\nI’m still learning to respond 😊",
+            "text": data['result'], // Assuming your API returns {result: "response text"}
             "isBot": true
           });
         });
+      } else {
+        setState(() {
+          messages.add({
+            "text": "Sorry, I encountered an error. Please try again.",
+            "isBot": true
+          });
+        });
+      }
+    } catch (e) {
+      setState(() {
+        messages.add({
+          "text": "Sorry, I couldnot connect to the server. Please try again.",
+          "isBot": true
+        });
       });
-    });
+     
+     
+    };
   }
 
   Widget buildBotMessage(String text) {
